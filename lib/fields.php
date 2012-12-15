@@ -53,8 +53,34 @@ class IntegerField implements Field
 	}
 }
 
+class KeyField implements Field
+{
+	public $is_pkey;
+	
+	public function __construct($pkey)
+	{
+		$this->is_pkey = $pkey ? true : false;
+	}
+	
+	public function getSQL()
+	{
+		return "int NOT NULL AUTO_INCREMENT";
+	}
+	
+}
+
 class Fields
 {
+	/**
+	 * Declares a Key field.
+	 * Maps to an Integer in the MySQL backend.
+	 * @param $primary True for primary keys. 
+	 */
+	 static function Key($primary)
+	 {
+	 	return new KeyField($primary);
+	 }
+	 
 	/**
 	 * Declares a text field.
 	 * @param $length - maximum number of characters allowed.

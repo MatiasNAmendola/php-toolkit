@@ -2,7 +2,6 @@
 include('models/testmodels.php');
 
 $object = new TestModel();
-$object2 = new TestModel();
 
 // Create a backend object.
 $backend = new MySQLBackend('localhost', 'root', '', 'lightorm');
@@ -27,12 +26,14 @@ $query = TestModel::all()
 	->filter('likes', '<=', 50)
 	->filter('name', '!=', 'Will Robinson');
 
-$query->execute($backend);
+//$query->execute($backend);
 
-while (($r = $query->next()) != NULL) {
+/*while (($r = $query->next()) != NULL) {
 	print_r($r);
-}
+}*/
 
+$object->name = "Jim";
+$backend->save($object);
 
-var_dump($query->execute($backend));
+//var_dump($query->execute($backend));
 //print_r($object);

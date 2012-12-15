@@ -18,5 +18,5 @@ interface Backend
 	 /**
 	  * Saves the given model.
 	  */
-	 function save($model);
+	 function save(&$model);
 }

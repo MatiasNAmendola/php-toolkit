@@ -32,16 +32,66 @@ class MySQLBackend implements Backend
 		}
 	}
 	
+	/**
+	 * Executes a QuerySet and returns a MySQLCursor for the result.
+	 */
+	function executeQuery( $query )
+	{
+		$sql = $this->getQuerySQL($query);
+		
+		if( $this->debug_queries ) {
+			var_dump($sql);
+		}
+		
+		$cursor = new MySQLCursor($this->query($sql));
+			
+		return $cursor;
+	}
+	
+	function save( &$model )
+	{
+		$pkey = $model->getPrimaryKeyField();
+		if(is_null($pkey)) {
+			trigger_error("Inserting Model with no Primary Key");
+		}
+		
+		if(isset($model->{$pkey->_name}))
+		{
+			$sql = $this->getUpdateSQL($model);
+			$this->query($sql);
+		}
+		else
+		{
+			print_r("Saving.. ");
+			$sql = $this->getInsertionSQL($model);
+			$this->query($sql);
+			print_r("New record: " . $this->db->insert_id . " ");
+			$model->{$pkey->_name} = $this->db->insert_id;
+			print_r($model->{$pkey->_name});
+		}
+		
+		return $model;
+	}
+	
+	/**
+	 * Runs a raw SQL query against the backend.
+	 */
 	function query($q) 
 	{
 		$this->query_count++;
+		if( $this->debug_queries ) {
+			print_r("> " . $q);
+		}
 		$r = $this->db->query($q);
 		if(!$r && $this->debug_queries) {
 			print_r($this->db->error);
 		}
-		return $this->db->query($q);
+		return $r;
 	}
 	
+	/**
+	 * Escapes a value for use in a Query.
+	 */
 	function escapeValue( $value )
 	{
 		if( is_string($value) )
@@ -51,6 +101,9 @@ class MySQLBackend implements Backend
 		return $value;
 	}
 	
+	/**
+	 * Returns the SQL for a select statement that represents the given QuerySet.
+	 */
 	function getQuerySQL( $query )
 	{
 		$fields = null;
@@ -65,6 +118,9 @@ class MySQLBackend implements Backend
 		return $querystr .';';
 	}
 	
+	/**
+	 * Returns the SQL for an INSERT statement that represents the given Model.
+	 */
 	function getInsertionSQL( $model )
 	{
 		$sql = 'INSERT INTO ' . $model->_name;
@@ -79,6 +135,30 @@ class MySQLBackend implements Backend
 		}
 		return $sql . ' (' . implode(', ', $fields) .') VALUES (' . implode(',', $values) . ');';
 	}
+	
+	/**
+	 * Returns the SQL for an UPDATE that represents the given Model
+	 */
+	 function getUpdateSQL( $model ) 
+	 {
+		$sql = 'UPDATE ' . $model->_name . ' SET';
+		$values = array();
+		foreach( $model->getFields() as $p => $v ) {
+			if(isset($model->$p) && !($v instanceof KeyField))
+			{
+				$values[] = $p .'=' . $this->escapeValue($model->$p);
+			}
+		}
+		$pkey = $model->getPrimaryKeyField();
+		if(is_null($pkey)) {
+			trigger_error("Cannot update a model with no primay key field");
+		}
+		if(!isset($model->{$pkey->_name}) ) {
+			trigger_error("Cannot update a model with no primary key");
+		}
+		$pkey_val = $model->{$pkey->_name};
+		return $sql . ' ' . implode(', ', $values) . ' WHERE '. $pkey->_name . '=' . $this->escapeValue($pkey_val) . ';';
+	 }
 
 	function evalNode($comp, $vals)
 	{
@@ -121,7 +201,7 @@ class MySQLBackend implements Backend
 			return $vals[0] . $symb . (is_string($vals[1]) ? '\'' .$vals[1] . '\'' : $vals[1]);
 		}
 	}
-		
+	
 	function getConditionSQL($query)
 	{
 		$conditions = $query->getConditions();
@@ -135,28 +215,5 @@ class MySQLBackend implements Backend
 			$q[] = $this->evalNode($c, $vs);
 		}
 		return implode(' AND ', $q );
-	}
-
-	function executeQuery( $query )
-	{
-		$sql = $this->getQuerySQL($query);
-		
-		if( $this->debug_queries ) {
-			var_dump($sql);
-		}
-		
-		$cursor = new MySQLCursor($this->query($sql));
-			
-		return $cursor;
-	}
-	
-	function save( $model )
-	{
-		$sql = $this->getInsertionSQL($model);
-		if( $this->debug_queries ) {
-			print_r($sql);
-		}
-		$this->query($sql);
-		return $model;
 	}
 }

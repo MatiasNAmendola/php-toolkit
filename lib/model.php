@@ -5,7 +5,14 @@
 
 class Model 
 {
+	/**
+	 * Fields of each model type.
+	 */
 	private static $_fields = array();
+	/**
+	 * Primary key fields of each model.
+	 */
+	private static $_primary = array();
 	 
     function __construct()
 	{	
@@ -27,6 +34,10 @@ class Model
 					$class = new ReflectionClass($c);
 					if($class->implementsInterface('Field'))
 					{
+						$v->_name = $p;
+						if($v instanceof KeyField) {
+							self::$_primary[$this->_name] = $v;
+						}
 						$fields[$p] = $v;
 						unset($this->$p);
 					}
@@ -46,6 +57,14 @@ class Model
 		return self::$_fields[$this->_name];
 	}
 	
+	function getPrimaryKeyField()
+	{
+		if(isset(self::$_primary[$this->_name])) {
+			return self::$_primary[$this->_name];
+		}
+		return NULL;
+	}
+	
 	function getTableSQL()
 	{
 		$query = "CREATE TABLE $this->_name ";
@@ -54,7 +73,9 @@ class Model
 		{
 			$columns[] = "$name " . $field->getSQL();
 		}
-		return $query . "(" . implode(', ', $columns) .");";
+		$pkey = $this->getPrimaryKeyField();
+		$pkey_str = (($pkey != NULL)? ', PRIMARY KEY('. ($pkey->_name) .')' : '' );
+		return $query . "(" . implode(', ', $columns) . $pkey_str. ");";
 	}
 }
 
