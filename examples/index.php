@@ -1,10 +1,13 @@
 <?php 
+
+// Setup autoloading.
+include('autoload.php');
 include('models/testmodels.php');
 
 $object = new TestModel();
 
 // Create a backend object.
-$backend = new MySQLBackend('localhost', 'root', '', 'lightorm');
+$backend = new bytecove\backends\MySQLBackend('localhost', 'root', '', 'lightorm');
 // Enable query dumping.
 $backend->debug_queries = true;
 

@@ -1,11 +1,7 @@
 <?php
 
-include('../lib/model.php');
-include('../lib/fields.php');
-include('../lib/backend.php');
-include('../lib/backends/mysqlbackend.php');
-include('../lib/queryset.php');
-
+use \bytecove\Model;
+use \bytecove\Fields;
 
 class TestModel extends Model
 {
