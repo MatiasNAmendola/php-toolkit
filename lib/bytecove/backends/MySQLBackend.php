@@ -2,6 +2,9 @@
 
 namespace bytecove\backends;
 
+use \bytecove\Model;
+use \bytecove\Fields;
+
 class MySQLBackend implements \bytecove\Backend
 {
 	private $db;
@@ -40,6 +43,18 @@ class MySQLBackend implements \bytecove\Backend
 		$pkey = $model->getPrimaryKeyField();
 		if(is_null($pkey)) {
 			trigger_error("Inserting Model with no Primary Key");
+		}
+		
+		// Copy data into an intermediate object so we can reverse foreign-key relationships.
+		$row = $model;
+		foreach($model->getFields() as $name => $field)
+		{
+			if(is_object($field) && $field instanceof \bytecove\ForeignKey )
+			{
+				$fkey = $field->field;
+				$key = $row->$name->$fkey;
+				$row->$name = $key;
+			}
 		}
 		
 		if(isset($model->{$pkey->_name}))

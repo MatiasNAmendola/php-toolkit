@@ -2,7 +2,15 @@
 A PHP ORM framework for the faint-hearted.
 
 ## How does it work?
-It doesn't (yet).
+It's currently not ready for real world usage.
+
+### Model Decleration
+See the Examples section.
+
+### Queries
+QuerySets contain conditions that a Backend is able to turn into a query, in the case of the MySQL backend the QuerySet is converted into SQL.
+
+All Model classes expose an ::all() method which returns a QuerySet that matches all records for that model, which can then be refined using the filter() method.
 
 ## How do I use it?
 You don't (yet).
@@ -10,6 +18,9 @@ You don't (yet).
 ### Examples
 ```php
 <?php
+
+use \bytecove\Model;
+use \bytecove\Fields;
 
 class MyModel extends Model
 {

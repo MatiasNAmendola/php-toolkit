@@ -15,6 +15,10 @@ class Model
 	 * Primary key fields of each model.
 	 */
 	private static $_primary = array();
+	/**
+	 * Foreign keys for each model.
+	 */
+	 private static $_foreign = array();
 	 
     function __construct()
 	{	
@@ -39,6 +43,12 @@ class Model
 						$v->_name = $p;
 						if($v instanceof KeyField) {
 							self::$_primary[$this->_name] = $v;
+						}
+						if($v instanceof ForeignKey) {
+							if(!isset(self::$_foreign[$this->_name])) {
+								self::$_foreign[$this->_name] = array();
+							}
+							self::$_foreign[$this->_name][$p] = $v;
 						}
 						$fields[$p] = $v;
 						unset($this->$p);
@@ -69,15 +79,25 @@ class Model
 	
 	function getTableSQL()
 	{
-		$query = "CREATE TABLE $this->_name ";
 		$columns = array();
 		foreach($this->getFields()  as $name => $field)
 		{
 			$columns[] = "$name " . $field->getSQL();
 		}
 		$pkey = $this->getPrimaryKeyField();
-		$pkey_str = (($pkey != NULL)? ', PRIMARY KEY('. ($pkey->_name) .')' : '' );
-		return $query . "(" . implode(', ', $columns) . $pkey_str. ");";
+		if(!is_null($pkey))
+		{
+			$columns[] = "PRIMARY KEY($pkey->_name)";
+		}
+		if(isset(self::$_foreign[$this->_name]))
+		{
+			foreach(self::$_foreign[$this->_name] as $name => $field )
+			{
+				$columns[] = "FOREIGN KEY ($name) REFERENCES $field->model ($field->field)";
+			}
+		}
+		$col_str = implode(', ', $columns);
+		return 	"CREATE TABLE $this->_name ($col_str);";
 	}
 }
 

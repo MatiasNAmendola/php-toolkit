@@ -63,6 +63,23 @@ class KeyField implements Field
 	
 }
 
+class ForeignKey implements Field
+{
+	public $model;
+	public $field;
+	
+	public function __construct($model, $field)
+	{
+		$this->model = $model;
+		$this->field = $field;
+	}
+	
+	public function getSQL()
+	{
+		return "int";
+	} 
+}
+
 class Fields
 {
 	/**
@@ -95,5 +112,13 @@ class Fields
 	static function Integer( $size )
 	{
 		return new IntegerField( $size );
+	}
+	
+	/**
+	 * Declares a foreign Key
+	 */
+	static function ForeignKey( $model, $field )
+	{
+		return new ForeignKey($model, $field);
 	}
 } 
