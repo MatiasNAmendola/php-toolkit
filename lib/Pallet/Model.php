@@ -1,6 +1,6 @@
 <?php
 
-namespace bytecove;
+namespace Pallet;
 
 /**
  * Model Class, contains Model behaviours and magic.
@@ -38,13 +38,13 @@ class Model
 					$c = get_class($v);
 		
 					$class = new \ReflectionClass($c);
-					if($class->implementsInterface('bytecove\Field'))
+					if($class->implementsInterface('\Pallet\Field'))
 					{
 						$v->_name = $p;
-						if($v instanceof KeyField) {
+						if($v instanceof \Pallet\KeyField) {
 							self::$_primary[$this->_name] = $v;
 						}
-						if($v instanceof ForeignKey) {
+						if($v instanceof \Pallet\ForeignKey) {
 							if(!isset(self::$_foreign[$this->_name])) {
 								self::$_foreign[$this->_name] = array();
 							}

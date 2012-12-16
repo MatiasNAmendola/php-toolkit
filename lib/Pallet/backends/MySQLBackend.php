@@ -1,11 +1,12 @@
 <?php
 
-namespace bytecove\backends;
+namespace Pallet\backends;
 
-use \bytecove\Model;
-use \bytecove\Fields;
+use \Pallet\Model;
+use \Pallet\Fields;
+use \Pallet\Backend;
 
-class MySQLBackend implements \bytecove\Backend
+class MySQLBackend implements Backend
 {
 	private $db;
 	
@@ -49,7 +50,7 @@ class MySQLBackend implements \bytecove\Backend
 		$row = $model;
 		foreach($model->getFields() as $name => $field)
 		{
-			if(is_object($field) && $field instanceof \bytecove\ForeignKey )
+			if(is_object($field) && $field instanceof \Pallet\ForeignKey )
 			{
 				$fkey = $field->field;
 				$key = $row->$name->$fkey;
@@ -143,7 +144,7 @@ class MySQLBackend implements \bytecove\Backend
 		$sql = 'UPDATE ' . $model->_name . ' SET';
 		$values = array();
 		foreach( $model->getFields() as $p => $v ) {
-			if(isset($model->$p) && !($v instanceof KeyField))
+			if(isset($model->$p) && !($v instanceof \Pallet\KeyField))
 			{
 				$values[] = $p .'=' . $this->escapeValue($model->$p);
 			}

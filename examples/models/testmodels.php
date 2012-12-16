@@ -1,7 +1,7 @@
 <?php
 
-use \bytecove\Model;
-use \bytecove\Fields;
+use \Pallet\Model;
+use \Pallet\Fields;
 
 class User extends Model
 {

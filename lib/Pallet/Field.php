@@ -1,6 +1,6 @@
 <?php
 
-namespace bytecove;
+namespace Pallet;
 
 /**
  * Field interface (some refactoring needed).

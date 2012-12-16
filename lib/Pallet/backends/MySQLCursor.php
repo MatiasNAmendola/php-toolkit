@@ -1,8 +1,10 @@
 <?php
 
-namespace bytecove\backends;
+namespace Pallet\backends;
 
-class MySQLCursor implements \bytecove\BackendCursor
+use \Pallet\BackendCursor;
+
+class MySQLCursor implements BackendCursor
 {
 	private $res;
 	

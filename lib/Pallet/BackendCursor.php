@@ -1,6 +1,6 @@
 <?php 
 
-namespace bytecove;
+namespace Pallet;
 
 interface BackendCursor
 {
