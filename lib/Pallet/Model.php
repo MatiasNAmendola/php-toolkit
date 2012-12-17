@@ -20,7 +20,7 @@ class Model
 	 */
 	 private static $_foreign = array();
 	 
-    function __construct()
+    function __construct($data = null)
 	{	
 		$reflector = new \ReflectionClass(get_class($this));
 		$this->_name = $reflector->getName();
@@ -57,6 +57,25 @@ class Model
 			}
 			self::$_fields[$this->_name] = $fields;
 		}
+		
+		if(is_array($data))
+		{
+			$fkeys = $this->getForeignKeys();
+			if(is_array($fkeys))
+			{
+				foreach($fkeys as $name => $field )
+				{
+					// Unset foreign key values on $data so that we can lazy-load them.
+					unset($data[$name]);
+				}
+			}
+			
+			// Copy data from $data into properties.
+			foreach($data as $k => $v )
+			{
+				$this->$k = $v;
+			}
+		}
 	}
 	
 	static function all()
@@ -77,11 +96,19 @@ class Model
 		return NULL;
 	}
 	
+	function getForeignKeys()
+	{
+		if(isset(self::$_foreign[$this->_name])) {
+			return self::$_foreign[$this->_name];
+		}
+		return NULL;
+	}
+	
 	function getTableSQL()
 	{
 		$columns = array();
 		foreach($this->getFields()  as $name => $field)
-		{
+		{ 
 			$columns[] = "$name " . $field->getSQL();
 		}
 		$pkey = $this->getPrimaryKeyField();

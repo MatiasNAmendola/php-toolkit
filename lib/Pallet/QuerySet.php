@@ -38,7 +38,11 @@ class QuerySet
 	
 	function next()
 	{
-		return $this->cursor->next();
+		$data = $this->cursor->next();
+		if(is_null($data)) return NULL;
+		$model_class = get_class($this->model); 
+		$model = new $model_class($data);
+		return $model;
 	}
 	
 	function getModel()
