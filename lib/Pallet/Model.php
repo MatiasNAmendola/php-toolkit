@@ -19,8 +19,12 @@ class Model
 	 * Foreign keys for each model.
 	 */
 	 private static $_foreign = array();
+	 /**
+	  * The current backend of this model
+	  */
+  	private $_backend;
 	 
-    function __construct($data = null)
+    function __construct($data = null, $backend = null)
 	{	
 		$reflector = new \ReflectionClass(get_class($this));
 		$this->_name = $reflector->getName();
@@ -66,6 +70,8 @@ class Model
 				foreach($fkeys as $name => $field )
 				{
 					// Unset foreign key values on $data so that we can lazy-load them.
+					$p = "_field_$name";
+					$this->$p = $data[$name];
 					unset($data[$name]);
 				}
 			}
@@ -76,11 +82,27 @@ class Model
 				$this->$k = $v;
 			}
 		}
+		
+		$this->_backend = $backend;
 	}
 	
 	static function all()
 	{
 		return new QuerySet(new static(), array());
+	}
+	
+	function __get($prop)
+	{
+		$fkeys = $this->getForeignKeys();
+		if(array_key_exists($prop, $fkeys)) {
+			$model = $fkeys[$prop]->model;
+			$field = $fkeys[$prop]->field;
+			$p = "_field_$prop";
+			$querys = $model::all()->filter($field, 'eq', $this->$p);
+			$querys->execute($this->_backend);
+			$res = $querys->next();
+			if(!is_null($res)) return $res;
+		}
 	}
 	
 	function getFields()

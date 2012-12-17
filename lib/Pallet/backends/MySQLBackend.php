@@ -166,7 +166,7 @@ class MySQLBackend implements Backend
 		switch($comp) {
 			case 'eq':
 			case '==':
-				$symb = ' == ';
+				$symb = ' = ';
 				break;
 			case 'ne':
 			case '!=':

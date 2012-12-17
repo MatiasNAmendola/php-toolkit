@@ -10,6 +10,8 @@ class QuerySet
 	
 	protected $cursor = null;
 	
+	protected $backend;
+	
 	function __construct($model, $new, $parent = null)
 	{
 		$this->model = $model;
@@ -33,6 +35,7 @@ class QuerySet
 
 	function execute($backend)
 	{
+		$this->backend = $backend;
 		$this->cursor = $backend->executeQuery($this);
 	}
 	
@@ -41,7 +44,7 @@ class QuerySet
 		$data = $this->cursor->next();
 		if(is_null($data)) return NULL;
 		$model_class = get_class($this->model); 
-		$model = new $model_class($data);
+		$model = new $model_class($data, $this->backend);
 		return $model;
 	}
 	

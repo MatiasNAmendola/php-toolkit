@@ -15,6 +15,12 @@ if(isset($_POST['body']) && isset($_POST['title']))
 	$message->title = $_POST['title'];
 	$message->ip = $_SERVER['REMOTE_ADDR'];
 	
+	$user = new User();
+	$user->email = 'test@example.com';
+	$backend->save($user);
+	
+	$message->user = $user;
+	
 	$backend->save($message);
 }
 
@@ -40,4 +46,6 @@ $messages->execute($backend);
 while(($message = $messages->next()) != NULL) {
 	echo "<h3>$message->title</h3>";
 	echo "<p>$message->message</p>";
+	$email = $message->user->email;
+	echo "<p>$email</p>";
 }
