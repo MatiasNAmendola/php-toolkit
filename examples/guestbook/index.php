@@ -34,7 +34,7 @@ $messages->execute($backend);
 <h2>Leave a message</h2>
 <form method="POST">
 	<label for="title">Title</label>
-	</label><input type="text" name="title"></input><br/>
+	<input type="text" name="title"></input><br/>
 	<label for="body">Message</label>
 	<input type="text" name="body"></input>
 	<input type="submit" value="Leave Message"></input>
