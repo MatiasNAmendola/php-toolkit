@@ -43,7 +43,7 @@ $messages->execute($backend);
 <h2>Past Messages</h2>
 <?php
 
-while(($message = $messages->next()) != NULL) {
+foreach($messages as $message) {
 	echo "<h3>$message->title</h3>";
 	echo "<p>$message->message</p>";
 	$email = $message->user->email;

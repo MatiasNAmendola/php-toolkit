@@ -100,7 +100,7 @@ class Model
 			$p = "_field_$prop";
 			$querys = $model::all()->filter($field, 'eq', $this->$p);
 			$querys->execute($this->_backend);
-			$res = $querys->next();
+			$res = $querys->current();
 			if(!is_null($res)) return $res;
 		}
 	}

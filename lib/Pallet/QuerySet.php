@@ -2,7 +2,7 @@
 
 namespace Pallet;
 
-class QuerySet
+class QuerySet implements \Iterator
 {
 	protected $conditions;
 	
@@ -39,15 +39,38 @@ class QuerySet
 		$this->cursor = $backend->executeQuery($this);
 	}
 	
-	function next()
+	/**
+	 * Iterator methods.
+	 */
+	public function current()
 	{
-		$data = $this->cursor->next();
+		$data = $this->cursor->current();
 		if(is_null($data)) return NULL;
 		$model_class = get_class($this->model); 
 		$model = new $model_class($data, $this->backend);
 		return $model;
 	}
 	
+	public function key()
+	{
+		return $this->cursor->key();
+	}
+	
+	function next()
+	{
+		$this->cursor->next();
+	}
+	
+	function rewind()
+	{
+		$this->cursor->rewind();
+	}
+	
+	public function valid()
+	{
+		return $this->cursor->valid();
+	} 
+		
 	function getModel()
 	{
 		return $this->model;
