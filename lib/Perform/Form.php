@@ -1,5 +1,5 @@
 <?php
-namespace Chloroform;
+namespace Perform;
 
 interface Form
 {

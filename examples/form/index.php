@@ -5,7 +5,7 @@ include('autoload.php');
 include('models/Message.php');
 
 // Import Chloroform 
-use \Chloroform\addons\PalletForm;
+use \Perform\addons\PalletForm;
 
 // Create a backend connection. (please don't use this in production.)
 $backend = new \Pallet\backends\MySQLBackend('localhost', 'root', '', 'lightorm');

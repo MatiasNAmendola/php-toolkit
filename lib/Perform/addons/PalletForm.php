@@ -1,7 +1,7 @@
 <?php
-namespace Chloroform\addons;
+namespace Perform\addons;
 
-use Chloroform\Form;
+use Perform\Form;
 use Pallet\Fields;
 
 class PalletForm implements Form
