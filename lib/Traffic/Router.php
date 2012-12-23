@@ -14,6 +14,14 @@ class Router
 		];
 	}
 	
+	public function routes($routes)
+	{
+		foreach($routes as $route)
+		{
+			$this->route($route[0], $route[1], $route[2]);
+		}
+	}
+	
 	public function handle($path)
 	{
 		foreach($this->routes as $route)
@@ -23,9 +31,11 @@ class Router
 			{
 				// Catch any extra parameters.
 				$args = array_slice(func_get_args(), 1);
+				$args = array_merge($args, array_slice($matches, 1));
 				return $this->doRoute($route, $args);
 			}
 		}
+		print_r('Failed to route');
 	}
 	
 	public function doRoute(&$route, &$args)
