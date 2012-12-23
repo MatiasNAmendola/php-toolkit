@@ -16,13 +16,12 @@ class Test {
 	}
 }
 
-$router = new Router();
-
-$router->routes([
+$router = new Router([
 	['|^test/$|', 'Test', 'demo'],
 	['|^say/(.+)/$|', 'Test', 'repeat']
 ]);
 
+// Also possible to called Router::routes() with routing info.
 
 $router->handle('test/', 'extra info');
 

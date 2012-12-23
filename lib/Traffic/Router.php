@@ -5,6 +5,14 @@ class Router
 {
 	private $routes = array();
 	
+	public function __construct($routes = NULL)
+	{
+		if(is_array($routes))
+		{
+			$this->routes($routes);
+		}
+	}
+	
 	public function route($patern, $controller, $method)
 	{
 		$this->routes[] = [
