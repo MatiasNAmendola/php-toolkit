@@ -11,34 +11,59 @@ Simlpy give Traffic a list of URLs, along with the class methods that handle tha
 <?php
 
 $router = new Router([
-	['|^test/$|', 'Test', 'demo'],
-	['|^say/(.+)/$|', 'Test', 'repeat']
+	['|^/$|', 'Files', 'index'],
+	['|^latest/$|', 'Files', 'latest']
 ]);
 ```
-
-Each route is identified by a regular expression, which allows a lot of flexibility.
+Each route contains a Regular Expression, a Class name and a Method name. 
 
 ### Routing
 
 ```php
 <?php
 
-$router->handle('test/', 'extra info');
+$response = $router->handle('latest/', 'extra info');
 ```
-Just calling handle() on the router with a URL is enough to get it rolling. You can also pass extra parmeters to handle() (such as client session info) and they will be passed in before any URL parameters to the view.
+The handle() method resolves a URL to one of the routes the router knows about, testing the given URL against the routing table until it finds a match (or runs out of routes). Once a match is found it instanciates the class and calls the method, passing in any groups matched in the regex.
 
-### View
+### Responses
+Traffic returns the exact value that came out of the view it called, so you can return anything you like. However a Response class is included which contains a 'template' and a 'vars' field, which should suffice for the simplest cases.
+
+```php
+<?php
+use Traffic\Response;
+
+class Files
+{
+	public function latest()
+	{
+		return new Response('lastest_files.php', 
+		[
+			'latest' => /* magic database query */,
+		]);
+	}
+}
+```
+The response object can then be used to load the appropriate template with the correct values.
+
+### Example
 ```php
 <?php 
 
-class Auth {
-	public function logout($session_info)
+class Profile {
+	public function view($session_info, $section)
 	{
         //...
+        return 
 	}
 }
 
-// $session_info will be passed into whatever view matches '/logout'
-$router->handle('/logout', $session_info);
+$router = new Router([
+    /* The group in this regex will be passed into the 'view' method. */
+	['|^profile/(\w+)/?$|', 'Profile', 'view'],
+]);
+
+// $session_info will be passed into whatever view matches the URL.
+$router->handle('/profile/contact', $session_info);
 
 ```
