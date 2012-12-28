@@ -68,6 +68,8 @@ $router = new Router([
 ]);
 
 // $session_info will be passed into whatever view matches the URL.
-$router->handle('/profile/contact', $session_info);
+$response = $router->handle('/profile/contact', $session_info);
+
+// $response is now the return value of Profile::view();
 
 ```
