@@ -50,11 +50,13 @@ The response object can then be used to load the appropriate template with the c
 ```php
 <?php 
 
+use Traffic\Response;
+
 class Profile {
 	public function view($session_info, $section)
 	{
         //...
-        return 
+        return new Response("profile_$section.php", ['profile' => /* ... */ ] );
 	}
 }
 
