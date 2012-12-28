@@ -22,9 +22,11 @@ Each route contains a Regular Expression, a Class name and a Method name.
 ```php
 <?php
 
-$response = $router->handle('latest/', 'extra info');
+$response = $router->handle('latest/' /*, $more, $data */ );
 ```
 The handle() method resolves a URL to one of the routes the router knows about, testing the given URL against the routing table until it finds a match (or runs out of routes). Once a match is found it instanciates the class and calls the method, passing in any groups matched in the regex.
+
+Any extra parameters passed into handle() are sent to the view before it's own URL parameters.
 
 ### Responses
 Traffic returns the exact value that came out of the view it called, so you can return anything you like. However a Response class is included which contains a 'template' and a 'vars' field, which should suffice for the simplest cases.
