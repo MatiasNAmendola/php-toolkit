@@ -4,7 +4,7 @@ namespace Perform\addons;
 use Perform\Form;
 use Pallet\Fields;
 
-class PalletForm implements Form
+class PalletForm extends Form
 {
 	protected $model;
 	
