@@ -11,6 +11,8 @@ class QuerySet implements \Iterator
 	protected $cursor = null;
 	
 	protected $backend;
+
+    public $sorting = array();
 	
 	function __construct($model, $new, $parent = null)
 	{
@@ -19,7 +21,8 @@ class QuerySet implements \Iterator
 		
 		if(!is_null($parent))
 		{
-			$this->conditions = array_merge($parent->conditions,$this->conditions);
+            $this->conditions = array_merge($parent->conditions,$this->conditions);
+            $this->sorting = $parent->sorting; 
 		}
 	}
 	
@@ -27,6 +30,12 @@ class QuerySet implements \Iterator
 	{
 		return new QuerySet( $this->model, array($cond => array($field, $vals)), $this );
 	}
+
+    function sort( $order )
+    {
+        $this->sorting[] = $order;
+        return $this;
+    }
 	
 	function isExecuted()
 	{

@@ -1,6 +1,12 @@
 <?php
+$conds = array();
+$conds[] = 'dog';
+$conds[] = 'cat';
+$conds[] = 'small';
+var_dump($conds);
 
-function __autoload($className)
+
+function ___autoload($className)
 {
     $className = ltrim($className, '\\');
     $fileName  = '';
@@ -12,6 +18,6 @@ function __autoload($className)
     }
     $fileName .= str_replace('_', DIRECTORY_SEPARATOR, $className) . '.php';
 	
-    require '../../lib/'.$fileName;
+   require '../../lib/'.$fileName;
 }
 

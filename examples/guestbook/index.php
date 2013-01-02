@@ -6,6 +6,7 @@ include('models/Message.php');
 
 // Create a backend connection. (please don't use this in production.)
 $backend = new \Pallet\backends\MySQLBackend('localhost', 'root', '', 'lightorm');
+$backend->debug_queries = true;
 
 // Recieve messages.
 if(isset($_POST['body']) && isset($_POST['title']))
@@ -24,7 +25,7 @@ if(isset($_POST['body']) && isset($_POST['title']))
 	$backend->save($message);
 }
 
-$messages = Message::all();
+$messages = Message::all()->sort('id');
 
 // No way to lazy-execute yet.
 $messages->execute($backend);

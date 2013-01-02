@@ -30,10 +30,6 @@ class MySQLBackend implements Backend
 	{
 		$sql = $this->getQuerySQL($query);
 		
-		if( $this->debug_queries ) {
-			var_dump($sql);
-		}
-		
 		$cursor = new MySQLCursor($this->query($sql));
 			
 		return $cursor;
@@ -80,7 +76,7 @@ class MySQLBackend implements Backend
 	{
 		$this->query_count++;
 		if( $this->debug_queries ) {
-			print_r("> " . $q);
+			var_dump($q);
 		}
 		$r = $this->db->query($q);
 		if(!$r && $this->debug_queries) {
@@ -115,8 +111,30 @@ class MySQLBackend implements Backend
 		{
 			$querystr = $querystr . ' WHERE ' . $conditions;
 		}
-		return $querystr .';';
+        $order = $this->getSortSQL($query);
+		return "$querystr $order";
 	}
+
+    /**
+     * Returns the SQL for a given sorting
+     */
+    function getSortSQL( $query )
+    {
+        if( count($query->sorting) === 0 ) return '';
+        $conds = array();
+        foreach($query->sorting as $s)
+        {
+            if(substr($s, 0, 1) !== '-')
+            {
+                $conds[] = $s;
+            }
+            else
+            {
+                $conds[] =  substr($s, 1) . ' DESC';
+            }
+        }
+        return 'ORDER BY ' . implode(', ', $conds);
+    }
 	
 	/**
 	 * Returns the SQL for an INSERT statement that represents the given Model.
