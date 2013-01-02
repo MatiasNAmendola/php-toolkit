@@ -14,9 +14,16 @@ class MySQLBackend implements Backend
 	
 	public $query_count = 0;
 	
-	function __construct($host, $user, $pass, $db)
+	function __construct($host, $user = null, $pass = null, $db = null)
 	{
-		$this->db = mysqli_connect( $host, $user, $pass, $db );
+        if( is_object($host) )
+        {
+            $this->db = $host;
+        }
+        else
+        {
+		    $this->db = mysqli_connect( $host, $user, $pass, $db );
+        }
 		if($this->db->connect_errno)
 		{
 			print_r($this->db->connect_error);

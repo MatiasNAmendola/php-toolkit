@@ -5,7 +5,8 @@ include('autoload.php');
 include('models/Message.php');
 
 // Create a backend connection. (please don't use this in production.)
-$backend = new \Pallet\backends\MySQLBackend('localhost', 'root', '', 'lightorm');
+$db = mysqli_connect('localhost', 'root', '', 'lightorm');
+$backend = new \Pallet\backends\MySQLBackend($db);
 $backend->debug_queries = true;
 
 // Recieve messages.
