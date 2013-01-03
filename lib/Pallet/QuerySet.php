@@ -13,6 +13,10 @@ class QuerySet implements \Iterator
 	protected $backend;
 
     public $sorting = array();
+
+    public $_offset = null;
+
+    public $_limit = null;
 	
 	function __construct($model, $new, $parent = null)
 	{
@@ -34,6 +38,18 @@ class QuerySet implements \Iterator
     function sort( $order )
     {
         $this->sorting[] = $order;
+        return $this;
+    }
+
+    function limit( $limit )
+    {
+        $this->_limit = $limit;
+        return $this;
+    }
+
+    function offset( $offset )
+    {
+        $this->_offset = $offset;
         return $this;
     }
 	

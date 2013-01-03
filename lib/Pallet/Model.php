@@ -95,7 +95,7 @@ class Model
 	function __get($prop)
 	{
 		$fkeys = $this->getForeignKeys();
-		echo $prop;
+    if(!is_array($fkeys)) return NULL;
 		if(array_key_exists($prop, $fkeys)) {
 			$model = $fkeys[$prop]->model;
 			$field = $fkeys[$prop]->field;

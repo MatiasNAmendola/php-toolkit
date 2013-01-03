@@ -31,7 +31,7 @@ if(isset($_GET['schema'])) {
     print($m->getTableSQL());
 }
 
-$messages = Message::all()->sort('id');
+$messages = Message::all()->sort('id')->offset(1)->limit(5);
 
 // No way to lazy-execute yet.
 $messages->execute($backend);

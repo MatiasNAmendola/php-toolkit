@@ -129,7 +129,10 @@ class MySQLBackend implements Backend
 			$querystr = $querystr . ' WHERE ' . $conditions;
 		}
         $order = $this->getSortSQL($query);
-		return "$querystr $order";
+        $skp = array();
+        if( $query->_limit !== NULL ) $skp[] = 'LIMIT ' . $query->_limit;
+        if( $query->_offset !== NULL ) $skp[] = 'OFFSET ' . $query->_offset;
+		return "$querystr $order " . implode(' ', $skp) . ';';
 	}
 
     /**
