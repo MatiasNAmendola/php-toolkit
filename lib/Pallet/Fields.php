@@ -29,14 +29,14 @@ class IntegerField implements Field
 	/**
 	 * returns the SQL name of the type.
 	 */
-	 function getSqlTypename()
-	 {
-	 	if( $this->size == 4 ) return 'int';
-		if( $this->size == 2 ) return 'smallint';
-		if( $this->size == 8 ) return 'bigint';
-		if( $this->size == 1 ) return 'tinyint';
-		return 'int';
-	 }
+	function getSqlTypename()
+	{
+		if( $this->size == 4 ) return 'int';
+	   if( $this->size == 2 ) return 'smallint';
+	   if( $this->size == 8 ) return 'bigint';
+	   if( $this->size == 1 ) return 'tinyint';
+	   return 'int';
+	}
 	
 	/**
 	 * Returns the SQL that defines this field.
@@ -45,6 +45,26 @@ class IntegerField implements Field
 	{
 		return $this->getSqlTypename();
 	}
+}
+
+class DateTimeField implements Field
+{
+    public $auto_now = FALSE;
+	
+	public function __construct($auto_now)
+	{
+		$this->auto_now = $auto_now ? true : false;
+	}
+	
+	public function getSQL()
+	{
+		return "datetime";
+	}
+
+    public function defaultValue()
+    {
+        return time();
+    }
 }
 
 class KeyField implements Field
@@ -60,7 +80,6 @@ class KeyField implements Field
 	{
 		return "int NOT NULL AUTO_INCREMENT";
 	}
-	
 }
 
 class ForeignKey implements Field
@@ -113,6 +132,16 @@ class Fields
 	{
 		return new IntegerField( $size );
 	}
+
+    /**
+     * Declares a DateTime field.
+     * @param $auto_now If true, this field will automatically be set to
+     * the current timestamp on insertion.
+     */
+    static function DateTime( $auto_now )
+    {
+        return new DateTimeField( $auto_now );
+    }
 	
 	/**
 	 * Declares a foreign Key

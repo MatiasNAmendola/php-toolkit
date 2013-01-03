@@ -21,5 +21,6 @@ class Message extends Model
 		$this->message = Fields::Text(1000);
 		$this->ip      = Fields::Text(16);
 		$this->user    = Fields::ForeignKey('User', 'id');
+        $this->post_time = Fields::DateTime(true);
 	}
 }

@@ -26,6 +26,11 @@ if(isset($_POST['body']) && isset($_POST['title']))
 	$backend->save($message);
 }
 
+if(isset($_GET['schema'])) {
+    $m = new Message();
+    print($m->getTableSQL());
+}
+
 $messages = Message::all()->sort('id');
 
 // No way to lazy-execute yet.

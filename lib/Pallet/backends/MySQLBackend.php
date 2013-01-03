@@ -48,6 +48,8 @@ class MySQLBackend implements Backend
 		if(is_null($pkey)) {
 			trigger_error("Inserting Model with no Primary Key");
 		}
+
+        $is_insertion = !isset($model->{$pkey->_name});
 		
 		// Copy data into an intermediate object so we can reverse foreign-key relationships.
 		$row = $model;
@@ -59,18 +61,26 @@ class MySQLBackend implements Backend
 				$key = $row->$name->$fkey;
 				$row->$name = $key;
 			}
-		}
+
+            // Set insert-time values for unset fields.
+            if($is_insertion) {
+                if(!isset($row->$name) && method_exists($field, 'defaultValue'))
+                {
+                    $row->$name = $field->defaultValue();
+                }
+            }
+        }
 		
-		if(isset($model->{$pkey->_name}))
-		{
-			$sql = $this->getUpdateSQL($model);
-			$this->query($sql);
-		}
-		else
+		if($is_insertion)
 		{
 			$sql = $this->getInsertionSQL($model);
 			$this->query($sql);
 			$model->{$pkey->_name} = $this->db->insert_id;
+		}
+		else
+		{
+			$sql = $this->getUpdateSQL($model);
+			$this->query($sql);
 		}
 		
 		return $model;

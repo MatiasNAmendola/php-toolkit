@@ -27,7 +27,8 @@ class Model
     function __construct($data = null, $backend = null)
 	{	
 		$reflector = new \ReflectionClass(get_class($this));
-		$this->_name = $reflector->getName();
+        $bits = explode('\\', $reflector->getName());
+		$this->_name = end($bits);
 		
 		if(!isset(self::$_fields[$this->_name]))
 		{
