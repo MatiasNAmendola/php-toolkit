@@ -37,7 +37,7 @@ class MySQLBackend implements Backend
 	{
 		$sql = $this->getQuerySQL($query);
 		
-		$cursor = new MySQLCursor($this->query($sql));
+		$cursor = new MySQLCursor($this->query($sql), $this);
 			
 		return $cursor;
 	}
@@ -101,6 +101,17 @@ class MySQLBackend implements Backend
 		}
 		return $r;
 	}
+
+    /**
+     * Returns the number of rows
+     */
+    function count($q) 
+    {
+        $sql = $this->getCountSQL($q);
+        $r = $this->query($sql);
+        $row = $r->fetch_array(); 
+        return $row[0];
+    }
 	
 	/**
 	 * Escapes a value for use in a Query.
@@ -133,7 +144,23 @@ class MySQLBackend implements Backend
         if( $query->_limit !== NULL ) $skp[] = 'LIMIT ' . $query->_limit;
         if( $query->_offset !== NULL ) $skp[] = 'OFFSET ' . $query->_offset;
 		return "$querystr $order " . implode(' ', $skp) . ';';
-	}
+    }
+
+    function getCountSQL( $query )
+    {
+        $querystr = 'SELECT count(*) '
+            . ' FROM '. $query->getModel()->_name . '';
+		$conditions = $this->getConditionSQL($query);
+		if( is_string($conditions) ) 
+		{
+			$querystr = $querystr . ' WHERE ' . $conditions;
+		}
+        $order = $this->getSortSQL($query);
+        $skp = array();
+        if( $query->_limit !== NULL ) $skp[] = 'LIMIT ' . $query->_limit;
+        if( $query->_offset !== NULL ) $skp[] = 'OFFSET ' . $query->_offset;
+		return "$querystr $order " . implode(' ', $skp) . ';';
+    }
 
     /**
      * Returns the SQL for a given sorting

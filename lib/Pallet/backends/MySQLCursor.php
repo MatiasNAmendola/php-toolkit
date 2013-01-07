@@ -11,12 +11,15 @@ class MySQLCursor implements BackendCursor
 	private $curr;
 	
 	private $row;
+
+    private $backend;
 	
-	function __construct($res)
+	function __construct($res, $backend)
 	{
 		$this->res = $res;
 		$this->row = 0;
 		$this->curr = $this->res->fetch_assoc();
+        $this->backend = $backend;
 	}
 	
 	function current()

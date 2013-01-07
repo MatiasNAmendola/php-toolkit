@@ -144,7 +144,8 @@ class Model
 		{
 			foreach(self::$_foreign[$this->_name] as $name => $field )
 			{
-				$columns[] = "FOREIGN KEY ($name) REFERENCES $field->model ($field->field)";
+                $bits = explode('\\', $field->model);
+				$columns[] = "FOREIGN KEY ($name) REFERENCES " . end($bits) . " ($field->field)";
 			}
 		}
 		$col_str = implode(', ', $columns);

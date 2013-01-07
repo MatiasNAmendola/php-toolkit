@@ -63,6 +63,11 @@ class QuerySet implements \Iterator
 		$this->backend = $backend;
 		$this->cursor = $backend->executeQuery($this);
 	}
+
+    function count()
+    {
+        return $this->backend->count($this);
+    }
 	
 	/**
 	 * Iterator methods.

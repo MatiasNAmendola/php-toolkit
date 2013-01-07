@@ -31,12 +31,14 @@ if(isset($_GET['schema'])) {
     print($m->getTableSQL());
 }
 
-$messages = Message::all()->sort('id')->offset(1)->limit(5);
+$messages = Message::all()->sort('id');
 
 // No way to lazy-execute yet.
 $messages->execute($backend);
 ?>
 <h1>Guestbook</h1>
+
+<p><?= $messages->count() ?> messages.</p>
 
 <h2>Leave a message</h2>
 <form method="POST">
