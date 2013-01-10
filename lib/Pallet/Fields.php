@@ -15,6 +15,11 @@ class TextField implements Field
 	{
 		return "varchar($this->length)";
 	}
+
+    function isVirtual()
+    {
+        return false;
+    }
 }
 
 class IntegerField implements Field
@@ -45,6 +50,11 @@ class IntegerField implements Field
 	{
 		return $this->getSqlTypename();
 	}
+
+    function isVirtual()
+    {
+        return false;
+    }
 }
 
 class DateTimeField implements Field
@@ -65,6 +75,11 @@ class DateTimeField implements Field
     {
         return time();
     }
+
+    function isVirtual()
+    {
+        return false;
+    }
 }
 
 class KeyField implements Field
@@ -80,6 +95,11 @@ class KeyField implements Field
 	{
 		return "int NOT NULL AUTO_INCREMENT";
 	}
+
+    function isVirtual()
+    {
+        return false;
+    }
 }
 
 class ForeignKey implements Field
@@ -97,6 +117,35 @@ class ForeignKey implements Field
 	{
 		return "int";
 	} 
+
+    function isVirtual()
+    {
+        return false;
+    }
+}
+
+class ForeignKeys implements Field
+{
+	public $model;
+	public $key;
+    public $pkey;
+	
+	public function __construct($model, $key, $pkey = null)
+	{
+		$this->model = $model;
+        $this->key = $key;
+        $this->pkey = $pkey;
+	}
+	
+	public function getSQL()
+	{
+		return NULL;
+	} 
+
+    function isVirtual()
+    {
+        return true;
+    }
 }
 
 class Fields
@@ -149,5 +198,13 @@ class Fields
 	static function ForeignKey( $model, $field )
 	{
 		return new ForeignKey($model, $field);
+	}
+
+	/**
+	 * Declares a collection based on a foreign key.
+	 */
+	static function ForeignKeys( $model, $field, $pkey = null )
+	{
+		return new ForeignKeys($model, $field, $pkey );
 	}
 } 

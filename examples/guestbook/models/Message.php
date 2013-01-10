@@ -9,6 +9,7 @@ class User extends Model
 	{
 		$this->id    = Fields::Key(true);
 		$this->email = Fields::Text(100);
+        $this->messages = Fields::ForeignKeys('Message', 'user');
 	}
 }
 

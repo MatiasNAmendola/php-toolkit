@@ -122,6 +122,9 @@ class MySQLBackend implements Backend
 		{
 			return '\''.$this->db->real_escape_string($value).'\'';
 		}
+        else if( is_null($value) ) {
+            return 'NULL';
+        }
 		return $value;
 	}
 	
@@ -232,10 +235,16 @@ class MySQLBackend implements Backend
 			case 'eq':
 			case '==':
 				$symb = ' = ';
+                if($vals[1] === NULL) {
+                    $symb = ' IS ';
+                }
 				break;
 			case 'ne':
 			case '!=':
 				$symb = ' != ';
+                if($vals[1] === NULL) {
+                    $symb = ' IS NOT ';
+                }
 				break;
 			case 'lt':
 			case '<':
@@ -263,7 +272,7 @@ class MySQLBackend implements Backend
 			return $vals[0] . $symb . '('. implode(',', array_map( 'quote_input', $vals[1] ) ) .')';
 		}
 		else {
-			return $vals[0] . $symb . (is_string($vals[1]) ? '\'' .$vals[1] . '\'' : $vals[1]);
+			return $vals[0] . $symb . $this->escapeValue($vals[1]); 
 		}
 	}
 	

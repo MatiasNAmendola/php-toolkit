@@ -7,5 +7,13 @@ namespace Pallet;
  */
 interface Field 
 {
-	function getSQL();
+    /**
+     * Helper function for generating Schema SQL.
+     */
+    function getSQL();
+
+    /**
+     * Returns false if the Field exists in the schema
+     */
+    function isVirtual();
 }

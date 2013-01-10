@@ -24,6 +24,9 @@ if(isset($_POST['body']) && isset($_POST['title']))
 	$message->user = $user;
 	
 	$backend->save($message);
+
+    $testm = $user->messages;
+    $testm->execute($backend);
 }
 
 if(isset($_GET['schema'])) {

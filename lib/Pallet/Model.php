@@ -18,11 +18,15 @@ class Model
 	/**
 	 * Foreign keys for each model.
 	 */
-	 private static $_foreign = array();
-	 /**
-	  * The current backend of this model
-	  */
-  	private $_backend;
+	private static $_foreign = array();
+    /**
+     * Foreign Collections.
+     */
+    private static $_collections = array();
+	/**
+	 * The current backend of this model
+	 */
+    private $_backend = null;
 	 
     function __construct($data = null, $backend = null)
 	{	
@@ -49,11 +53,17 @@ class Model
 						if($v instanceof \Pallet\KeyField) {
 							self::$_primary[$this->_name] = $v;
 						}
-						if($v instanceof \Pallet\ForeignKey) {
+                        else if($v instanceof \Pallet\ForeignKey) {
 							if(!isset(self::$_foreign[$this->_name])) {
 								self::$_foreign[$this->_name] = array();
 							}
 							self::$_foreign[$this->_name][$p] = $v;
+						}
+                        else if($v instanceof \Pallet\ForeignKeys) {
+							if(!isset(self::$_collections[$this->_name])) {
+								self::$_collections[$this->_name] = array();
+							}
+							self::$_collections[$this->_name][$p] = $v;
 						}
 						$fields[$p] = $v;
 						unset($this->$p);
@@ -95,16 +105,33 @@ class Model
 	function __get($prop)
 	{
 		$fkeys = $this->getForeignKeys();
-    if(!is_array($fkeys)) return NULL;
-		if(array_key_exists($prop, $fkeys)) {
-			$model = $fkeys[$prop]->model;
-			$field = $fkeys[$prop]->field;
-			$p = "_field_$prop";
-			$querys = $model::all()->filter($field, 'eq', $this->$p);
-			$querys->execute($this->_backend);
-			$res = $querys->current();
-			if(!is_null($res)) return $res;
-		}
+        if(is_array($fkeys))
+        {
+            if(array_key_exists($prop, $fkeys)) {
+                $model = $fkeys[$prop]->model;
+                $field = $fkeys[$prop]->field;
+                $p = "_field_$prop";
+                $querys = $model::all()->filter($field, 'eq', $this->$p);
+                $querys->execute($this->_backend);
+                $res = $querys->current();
+                if(!is_null($res)) return $res;
+            }
+        }
+        $fcols = $this->getForeignCollections();
+        if(is_array($fcols)) {
+            if(array_key_exists($prop, $fcols)) {
+                $m = ($fcols[$prop]->model);
+                $model = new $m;
+                $field = $fcols[$prop];
+                if($field->pkey == null) {
+                    $field->pkey = $model->getPrimaryKeyField()->_name;
+                }
+                $q = $model::all()->filter($field->key, '==', $this->{$field->pkey});
+                return $q;
+            }
+        }
+        return NULL;
+
 	}
 	
 	function getFields()
@@ -127,13 +154,23 @@ class Model
 		}
 		return NULL;
 	}
+
+	function getForeignCollections()
+	{
+		if(isset(self::$_collections[$this->_name])) {
+			return self::$_collections[$this->_name];
+		}
+		return NULL;
+	}
 	
 	function getTableSQL()
 	{
 		$columns = array();
 		foreach($this->getFields()  as $name => $field)
 		{ 
-			$columns[] = "$name " . $field->getSQL();
+            if($field->isVirtual() === FALSE) {
+    			$columns[] = "$name " . $field->getSQL();
+            }
 		}
 		$pkey = $this->getPrimaryKeyField();
 		if(!is_null($pkey))
